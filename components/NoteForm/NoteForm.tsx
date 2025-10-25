@@ -6,9 +6,11 @@ import * as Yup from 'yup';
 import css from './NoteForm.module.css';
 
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { createNote } from '@/lib/api';
-import { useNoteStore, initialDraft } from '@/lib/store/noteStore';
+
+
 import type { NoteTag } from '@/types/note';
+import { createNote } from '../lib/api/clientApi';
+import { initialDraft, useNoteStore } from '../lib/store/noteStore';
 
 type FormValues = {
   title: string;
