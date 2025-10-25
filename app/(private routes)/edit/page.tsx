@@ -5,8 +5,8 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useQuery, useMutation } from '@tanstack/react-query';
 
-import css from './EditProfile.module.css';
-import { getMe, updateMe } from '@/components/lib/api/clientApi';
+import css from './EditProfilePage.module.css';
+import { getMe, updateMe } from '@/lib/api/clientApi';
 
 export default function EditProfilePage() {
   const router = useRouter();

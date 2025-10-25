@@ -1,7 +1,7 @@
 import Image from 'next/image';
 
-import css from './profile.module.css';
-import { getMe } from '@/components/lib/api/serverApi';
+import css from './ProfilePage.module.css';
+import { getMe } from '@/lib/api/serverApi';
 import Link from 'next/link';
 
 export const metadata = {

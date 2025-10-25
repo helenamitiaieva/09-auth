@@ -4,8 +4,8 @@ import { useRouter } from 'next/navigation';
 
 
 import css from './AuthNavigation.module.css';
-import { logout } from '../lib/api/clientApi';
-import { useAuthStore } from '../lib/store/authStore';
+import { logout } from '../../lib/api/clientApi';
+import { useAuthStore } from '../../lib/store/authStore';
 
 export default function AuthNavigation() {
   const router = useRouter();

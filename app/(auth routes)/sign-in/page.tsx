@@ -3,8 +3,8 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 import css from './SignInPage.module.css';
-import { login } from '@/components/lib/api/clientApi';
-import { useAuthStore } from '@/components/lib/store/authStore';
+import { login } from '@/lib/api/clientApi';
+import { useAuthStore } from '@/lib/store/authStore';
 
 export default function SignInPage() {
   const router = useRouter();

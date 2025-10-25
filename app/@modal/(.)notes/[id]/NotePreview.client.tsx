@@ -2,9 +2,10 @@
 
 import { useRouter } from 'next/navigation';
 import { useQuery } from '@tanstack/react-query';
-import { getSingleNote } from '@/lib/api';
+
 import Modal from '@/components/Modal/Modal';
 import css from './NotePreview.module.css';
+import { getSingleNote } from '@/lib/api';
 
 type Props = { id: string };
 
