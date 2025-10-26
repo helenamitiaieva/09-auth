@@ -6,12 +6,13 @@ import { useDebounce } from 'use-debounce';
 import Link from 'next/link';
 import css from './page.module.css';
 
-import { getNotes } from '@/lib/api';
+
 import type { Note } from '@/types/note';
 
 import SearchBox from '@/components/SearchBox/SearchBox';
 import Pagination from '@/components/Pagination/Pagination';
 import NoteList from '@/components/NoteList/NoteList';
+import { fetchNotes } from '@/lib/api/clientApi';
 
 interface NotesClientProps {
   initialPage: number;
@@ -32,7 +33,7 @@ export default function NotesClient({
 
   const { data, isLoading, isError } = useQuery({
     queryKey: ['notes', debouncedSearch, page, tag ?? ''],
-    queryFn: () => getNotes({ page, perPage, search: debouncedSearch, tag }),
+    queryFn: () => fetchNotes({ page, perPage, search: debouncedSearch, tag }),
     placeholderData: (prev) => prev,
   });
 

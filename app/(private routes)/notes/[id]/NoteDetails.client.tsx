@@ -3,7 +3,8 @@
 import { useQuery } from '@tanstack/react-query';
 import { useParams } from 'next/navigation';
 import css from './NoteDetails.module.css';
-import { getSingleNote } from '@/lib/api';
+import { fetchNoteById } from '@/lib/api/clientApi';
+
 
 export default function NoteDetailsClient() {
   const params = useParams<{ id: string }>();
@@ -11,7 +12,7 @@ export default function NoteDetailsClient() {
 
   const { data: note, isLoading, isError } = useQuery({
     queryKey: ['note', id],
-    queryFn: () => getSingleNote(id),
+    queryFn: () => fetchNoteById(id),
     enabled: Boolean(id),       
     refetchOnMount: false,
   });
