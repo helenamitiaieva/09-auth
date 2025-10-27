@@ -3,13 +3,27 @@
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { useQuery, useMutation } from '@tanstack/react-query';
+import {
+  useQuery,
+  useMutation,
+  useQueryClient,
+  type UseMutationResult,
+} from '@tanstack/react-query';
 
 import css from './EditProfilePage.module.css';
 import { getMe, updateMe } from '@/lib/api/clientApi';
 
+type UpdatePayload = { username: string };
+type User = {
+  id: string;
+  email: string;
+  username: string;
+  avatar: string;
+};
+
 export default function EditProfilePage() {
   const router = useRouter();
+  const queryClient = useQueryClient();
 
   const { data: user, isLoading, isError } = useQuery({
     queryKey: ['me'],
@@ -23,10 +37,16 @@ export default function EditProfilePage() {
     if (user?.username) setUsername(user.username);
   }, [user]);
 
-  const { mutateAsync, isPending } = useMutation({
-    mutationFn: (payload: { username: string }) => updateMe(payload),
-    onSuccess: () => router.push('/profile'),
-  });
+  const { mutateAsync, isPending }: UseMutationResult<User, unknown, UpdatePayload> =
+    useMutation({
+      mutationFn: (payload: UpdatePayload) => updateMe(payload),
+      onSuccess: (updatedUser) => {
+
+        queryClient.setQueryData(['me'], updatedUser);
+
+        router.push('/profile');
+      },
+    }) as unknown as UseMutationResult<User, unknown, UpdatePayload>;
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -80,7 +100,7 @@ export default function EditProfilePage() {
 
           <div className={css.actions}>
             <button type="submit" className={css.saveButton} disabled={isPending}>
-              Save
+              {isPending ? 'Saving…' : 'Save'}
             </button>
             <button type="button" className={css.cancelButton} onClick={onCancel}>
               Cancel

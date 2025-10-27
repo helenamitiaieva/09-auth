@@ -8,12 +8,12 @@ import { fetchNoteById } from '@/lib/api/clientApi';
 
 export default function NoteDetailsClient() {
   const params = useParams<{ id: string }>();
-  const id = params.id; 
+  const id = params.id;
 
   const { data: note, isLoading, isError } = useQuery({
     queryKey: ['note', id],
     queryFn: () => fetchNoteById(id),
-    enabled: Boolean(id),       
+    enabled: Boolean(id),
     refetchOnMount: false,
   });
 
@@ -27,9 +27,7 @@ export default function NoteDetailsClient() {
           <h2>{note.title}</h2>
         </div>
         <p className={css.content}>{note.content}</p>
-        <p className={css.date}>
-          {new Date(note.createdAt).toLocaleString()}
-        </p>
+        <p className={css.date}>{new Date(note.createdAt).toLocaleString()}</p>
       </div>
     </div>
   );

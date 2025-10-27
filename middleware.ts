@@ -1,32 +1,46 @@
-import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
+import { NextResponse } from 'next/server';
 
-const PRIVATE_PREFIXES = ['/notes', '/profile'];
-const AUTH_PREFIXES = ['/sign-in', '/sign-up'];
+export const config = {
+  matcher: ['/profile/:path*', '/notes/:path*', '/sign-in', '/sign-up'],
+};
 
-export function middleware(req: NextRequest) {
-  const { pathname } = req.nextUrl;
-  const token = req.cookies.get('token')?.value || req.cookies.get('accessToken')?.value;
+const PRIVATE_PREFIX = /^\/(profile|notes)(\/|$)/;
+const AUTH_PREFIX = /^\/(sign-in|sign-up)(\/|$)/;
 
-  const isPrivate = PRIVATE_PREFIXES.some((p) => pathname.startsWith(p));
-  const isAuthPage = AUTH_PREFIXES.some((p) => pathname.startsWith(p));
+export default async function middleware(req: NextRequest) {
+  const { pathname, origin } = new URL(req.url);
 
-  if (!token && isPrivate) {
-    const url = req.nextUrl.clone();
-    url.pathname = '/sign-in';
+  const access = req.cookies.get('accessToken')?.value;
+  const refresh = req.cookies.get('refreshToken')?.value;
+
+  if (!access && refresh) {
+    try {
+      const sessionRes = await fetch(`${origin}/api/auth/session`, {
+        method: 'GET',
+        headers: { cookie: req.headers.get('cookie') || '' },
+      });
+      const setCookie = sessionRes.headers.get('set-cookie');
+      if (setCookie) {
+        const next = NextResponse.next();
+        next.headers.append('set-cookie', setCookie);
+        return next;
+      }
+    } catch {
+    }
+  }
+
+  const hasAccess = Boolean(access || req.cookies.get('accessToken')?.value);
+
+  if (PRIVATE_PREFIX.test(pathname) && !hasAccess) {
+    const url = new URL('/sign-in', req.url);
     url.searchParams.set('from', pathname);
     return NextResponse.redirect(url);
   }
 
-  if (token && isAuthPage) {
-    const url = req.nextUrl.clone();
-    url.pathname = '/profile';
-    return NextResponse.redirect(url);
+  if (AUTH_PREFIX.test(pathname) && hasAccess) {
+    return NextResponse.redirect(new URL('/profile', req.url));
   }
 
   return NextResponse.next();
 }
-
-export const config = {
-  matcher: ['/((?!_next/static|_next/image|favicon.ico|api).*)'],
-};

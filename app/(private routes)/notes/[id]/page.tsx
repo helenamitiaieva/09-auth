@@ -1,21 +1,21 @@
-import type { Metadata } from 'next'
-import { dehydrate, QueryClient } from '@tanstack/react-query'
-import HydrateClient from '@/components/TanStackProvider/HydrateClient'
+import type { Metadata } from 'next';
+import { dehydrate, QueryClient } from '@tanstack/react-query';
+import HydrateClient from '@/components/TanStackProvider/HydrateClient';
 
-import NoteDetailsClient from './NoteDetails.client'
-import { fetchNoteById } from '@/lib/api/serverApi'
+import NoteDetailsClient from './NoteDetails.client';
+import { fetchNoteById } from '@/lib/api/serverApi';
+
 
 type Props = {
-  params: Promise<{ id: string }>
-}
+  params: Promise<{ id: string }>;
+};
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { id } = await params
+  const { id } = await params;
   try {
-    const note = await fetchNoteById(id)
-    const title = `${note.title} | NoteHub`
-    const description =
-      note.content?.slice(0, 120) || 'Перегляд нотатки у NoteHub.'
+    const note = await fetchNoteById(id);
+    const title = `${note.title} | NoteHub`;
+    const description = note.content?.slice(0, 120) || 'Перегляд нотатки у NoteHub.';
 
     return {
       title,
@@ -33,7 +33,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
           },
         ],
       },
-    }
+    };
   } catch {
     return {
       title: 'Note details | NoteHub',
@@ -51,24 +51,24 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
           },
         ],
       },
-    }
+    };
   }
 }
 
 export default async function NoteDetailsPage({ params }: Props) {
-  const { id } = await params
+  const { id } = await params;
 
-  const qc = new QueryClient()
+  const qc = new QueryClient();
   await qc.prefetchQuery({
     queryKey: ['note', id],
     queryFn: () => fetchNoteById(id),
-  })
+  });
 
-  const state = dehydrate(qc)
+  const state = dehydrate(qc);
 
   return (
     <HydrateClient state={state}>
       <NoteDetailsClient />
     </HydrateClient>
-  )
+  );
 }
